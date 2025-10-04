@@ -14,8 +14,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import time
-import os
-from cryptoquant.config.config import binance_api_key, binance_secret_key
 import ccxt
 
 '''
@@ -41,23 +39,30 @@ import ccxt
     last    day    Fire on the last day within the month
     x,y,z    any    Fire on any matching expression; can combine any number of any of the above expressions
 '''
-exchange = ccxt.binance({
-    'apiKey': binance_api_key,
-    'secret': binance_secret_key,
-    'timeout': 3000,
-    'enableRateLimit': True,
-    "options": {'recvWindow': 50000}
-})
+exchange = ccxt.binance(
+
+    {
+        'apiKey': 'g0G9maOBYMbcgqc8vRAohK5q7j1dSRCu5wIkl5HoUSoWI7hopOeRr7p9N8Jczgfi',
+        'secret': 'tfLZcHoKlwycpmbL8TLk7sXxdwV9Ho2pUcWB1FDLalsiVbeo9Qe2oYJmkTWPUs23',
+        'timeout': 30000,
+        'enableRateLimit': True,
+        'proxies': {
+            'http': '127.0.0.1:7897',
+            'https': '127.0.0.1:7897'
+        }
+    }
+)
 
 
 # 模仿购买股票函数
 def buy(symbol, amount):
     ticker = exchange.fetch_ticker(symbol)
-    sell_price = ticker['ask'] - 1
-    print(f"{symbol} ask price {sell_price}")
+    sell_price = ticker['ask'] - 5
+    number = amount / sell_price
+    print(f"{symbol} ask price {ticker['ask']}")
     # 开始下单购买 B
-    order_info = exchange.create_limit_buy_order(symbol, amount, sell_price)
-    print(f"Buy {symbol} @{sell_price} Amount:{amount} id:{order_info['id']} time:{datetime.now()}")
+    order_info = exchange.create_limit_buy_order(symbol, number, sell_price)
+    print(f"Buy {symbol} @{sell_price} Amount:{amount} number:{number} id:{order_info['id']} time:{datetime.now()}")
 
 
 def tick():
@@ -69,17 +74,10 @@ def main():
     job_defaults = {'max_instances': 20}  # 最大任务数量
     scheduler = BackgroundScheduler(timezone='MST', job_defaults=job_defaults)
     scheduler.add_job(tick, 'cron', minute="*", second='*/3')
-    # 每分0秒定投买入
-    # scheduler.add_job(buy, 'cron', minute="*", second='0',args=[eos,3])
-    # scheduler.add_job(buy, 'cron', minute="*", second='0',args=[eos,3])
-    # 每5秒买入一次
-    # scheduler.add_job(buy, 'cron',  second='*/5',args=[symbol,3])
-    # 每月1号定投买入 EOS
-    scheduler.add_job(buy, 'cron', year="*", month='*', day='1', second="0", args=[symbol1, amount])
-    # 每月1号定投买入 ETH
-    scheduler.add_job(buy, 'cron', year="*", month='*', day='1', second="0", args=[symbol2, 0.1])
-    # 每周第一天定投买入
-    scheduler.add_job(buy, 'cron', day_of_week='1', second='0', args=[symbol1, 3])
+    scheduler.add_job(buy, 'cron', minute='*/1', args=['BTC/FDUSD', 11])
+
+    # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6])
+
 
     try:
         scheduler.start()
@@ -88,10 +86,7 @@ def main():
 
 
 if __name__ == '__main__':
-    symbol1 = 'EOS/USDT'
-    amount = 3
-    symbol2 = 'ETH/USDT'
-    # buy(symbol,amount)
+
     main()
 
     while True:

@@ -13,7 +13,8 @@
 """
 import time
 import ccxt
-print (ccxt.exchanges)
+
+# print(ccxt.exchanges)
 # from cryptoquant.config.config import binance_api_key,binance_secret_key
 
 ## 实例化交易所
@@ -24,12 +25,20 @@ print (ccxt.exchanges)
 #     'enableRateLimit': True,
 # })
 symbol = 'BTC/USDT'
-exchange = ccxt.binance({
-    'apiKey': '',
-    'secret': '',
-    'timeout': 30000,
-    'enableRateLimit': True,
-})
+
+exchange = ccxt.binance(
+
+    {
+        'apiKey': 'g0G9maOBYMbcgqc8vRAohK5q7j1dSRCu5wIkl5HoUSoWI7hopOeRr7p9N8Jczgfi',
+        'secret': 'tfLZcHoKlwycpmbL8TLk7sXxdwV9Ho2pUcWB1FDLalsiVbeo9Qe2oYJmkTWPUs23',
+        'timeout': 30000,
+        'enableRateLimit': True,
+        'proxies': {
+            'http': '127.0.0.1:7897',
+            'https': '127.0.0.1:7897'
+        }
+    }
+)
 # 第二种方式
 # exchange_id = 'binance'
 # exchange_class = getattr(ccxt, exchange_id)
@@ -40,31 +49,26 @@ exchange = ccxt.binance({
 #     'enableRateLimit': True,
 # })
 
-tickers = exchange.fetch_tickers()
-print('tickers',tickers)
+# tickers = exchange.fetch_tickers()
+# print('tickers', tickers)
 ### 获取市场信息
-markets = exchange.load_markets()
-
-symbol_info = markets[symbol]
-precision = symbol_info['precision']
-
-print(exchange.id, markets)
+# markets = exchange.load_markets()
+#
+# symbol_info = markets[symbol]
+# precision = symbol_info['precision']
+#
+# print(exchange.id, markets)
 
 ### 获取盘口信息
 
 # print (exchange.fetch_order_book (symbol))
-symbol = 'BTC/USDT'
+symbol = 'USDE/USDT'
+amount=10
+sell_price=1.0000
+order_info = exchange.create_limit_buy_order(symbol, amount, sell_price)
 
-
-
-
-
-
-orderbook = exchange.fetch_order_book (symbol)
-
-print ('orderbook',orderbook)
-print ('bids',orderbook['bids'])
-print ('asks',orderbook['asks'])
+# print('orderbook', orderbook)
+print('orderbook',order_info)
 
 
 # delay = 2 # seconds
@@ -73,17 +77,15 @@ print ('asks',orderbook['asks'])
 #     time.sleep (delay) # rate limit
 
 ### 获取TICKER数据
-if (exchange.has['fetchTicker']):
-    print('ticker',exchange.fetch_ticker(symbol)) # ticker for LTC/ZEC
-    # symbols = list(exchange.markets.keys())
-    # print(exchange.fetch_ticker(random.choice(symbols))) # ticker for a random symbol
+# if (exchange.has['fetchTicker']):
+#     print('ticker', exchange.fetch_ticker(symbol))  # ticker for LTC/ZEC
+# symbols = list(exchange.markets.keys())
+# print(exchange.fetch_ticker(random.choice(symbols))) # ticker for a random symbol
 
 
 ### 获取K线数据
-kline_data = exchange.fetch_ohlcv(symbol, '1d')
-print('kline_data',kline_data)
-
-
+# kline_data = exchange.fetch_ohlcv(symbol, '1d')
+# print('kline_data', kline_data)
 
 # Python demo
 # import time
@@ -94,8 +96,8 @@ print('kline_data',kline_data)
 
 ### 获取public trade线数据
 
-public_trade = exchange.fetch_trades(symbol)
-print('public_trade',public_trade)
+# public_trade = exchange.fetch_trades(symbol)
+# print('public_trade', public_trade)
 
 # Python
 # import time
@@ -103,7 +105,5 @@ print('public_trade',public_trade)
 #     for symbol in exchange.markets:  # ensure you have called loadMarkets() or load_markets() method.
 #         print (symbol, exchange.fetch_trades (symbol))
 
-
-
-if __name__ == "__main__":
-    pass
+# if __name__ == "__main__":
+#     pass
