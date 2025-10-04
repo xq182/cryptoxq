@@ -55,9 +55,9 @@ exchange = ccxt.binance(
 
 
 # 模仿购买股票函数
-def buy(symbol, amount):
+def buy(symbol, amount,cut):
     ticker = exchange.fetch_ticker(symbol)
-    sell_price = ticker['ask'] - 5
+    sell_price = ticker['ask'] - cut
     number = amount / sell_price
     print(f"{symbol} ask price {ticker['ask']}")
     # 开始下单购买 B
@@ -74,9 +74,9 @@ def main():
     job_defaults = {'max_instances': 20}  # 最大任务数量
     scheduler = BackgroundScheduler(timezone='MST', job_defaults=job_defaults)
     scheduler.add_job(tick, 'cron', minute="*", second='*/3')
-    scheduler.add_job(buy, 'cron', minute='*/1', args=['BTC/FDUSD', 11])
+    scheduler.add_job(buy, 'cron', minute='*/2', args=['BTC/FDUSD', 11,5])
 
-    # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6])
+    # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6,0.0001])
 
 
     try:
