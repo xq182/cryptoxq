@@ -55,7 +55,7 @@ exchange = ccxt.binance(
 
 
 # 模仿购买股票函数
-def buy(symbol, amount,cut):
+def buy(symbol, amount, cut):
     ticker = exchange.fetch_ticker(symbol)
     sell_price = ticker['ask'] - cut
     number = amount / sell_price
@@ -68,18 +68,22 @@ def buy(symbol, amount,cut):
 def tick():
     print("tick", datetime.now())
 
+
 #  nohup python  class1-fixedInvestment.py >xq.log&
 # ps aux | grep class1-fixedInvestment.py
 # kill - 9 73465
 def main():
     # 定时 cron 任务也非常简单，直接给触发器 trigger 传入 ‘cron’ 即可。hour =19 ,minute =23 这里表示每天的19：23 分执行任务。这里可以填写数字，也可以填写字符串
-    job_defaults = {'max_instances': 20}  # 最大任务数量
+    job_defaults = {
+        'max_instances': 30,
+        'misfire_grace_time': None
+                    }  # 最大任务数量
+
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
-    scheduler.add_job(tick, 'cron', minute="*", second='*/3')
-    scheduler.add_job(buy, 'cron', minute='43', args=['BTC/FDUSD', 11,5])
+    scheduler.add_job(tick, 'cron', minute="*", second='3')
+    scheduler.add_job(buy, 'cron', minute='55', args=['BTC/FDUSD', 11, 5])
 
     # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6,0.0001])
-
 
     try:
         scheduler.start()
