@@ -12,6 +12,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 """
 import threading
+from ahr import get_ahr999
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -43,12 +44,12 @@ import socket
     x,y,z    any    Fire on any matching expression; can combine any number of any of the above expressions
 '''
 
-        #
+#
 
-        # 'proxies': {
-        #     'http': '127.0.0.1:7897',
-        #     'https': '127.0.0.1:7897'
-        # }
+# 'proxies': {
+#     'http': '127.0.0.1:7897',
+#     'https': '127.0.0.1:7897'
+# }
 
 exchange = ccxt.binance(
 
@@ -66,58 +67,52 @@ def buy(symbol, amount, cut):
     ticker = exchange.fetch_ticker(symbol)
     sell_price = ticker['ask'] - cut
     number = amount / sell_price
-    print(f"{symbol} ask price {ticker['ask']}", flush=True)
     # 开始下单购买 B
     order_info = exchange.create_limit_buy_order(symbol, number, sell_price)
-    print(f"Buy {symbol} @{sell_price} Amount:{amount} number:{number} id:{order_info['id']} time:{datetime.now()}", flush=True)
+    print(
+        f"buy_success {symbol} @{sell_price} Amount:{amount} number:{number} id:{order_info['id']} time:{datetime.now()}",
+        flush=True)
 
 
-def tick():
-    print("tick", datetime.now())
-
-
-#  nohup python  class1-fixedInvestment.py >xq.log&
-# ps aux | grep class1-fixedInvestment.py
+#  nohup python  buy.py >xq.log&
+# ps aux | grep buy.py
 # kill - 9 73465
-# def main():
-    # 定时 cron 任务也非常简单，直接给触发器 trigger 传入 ‘cron’ 即可。hour =19 ,minute =23 这里表示每天的19：23 分执行任务。这里可以填写数字，也可以填写字符串
-    # job_defaults = {
-    #     'max_instances': 30,
-    #     'misfire_grace_time': None
-    #                 }  # 最大任务数量
-    # scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
-    # scheduler.add_job(tick, 'cron', minute="*", second='10')
-    # scheduler.add_job(buy, 'cron', minute='10', args=['BTC/FDUSD', 11, 5])
 
-    # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6,0.0001])
-
-    # try:
-    #     scheduler.start()
-    # except (KeyboardInterrupt, SystemExit):
-    #     pass
+# scheduler.add_job(buy, 'cron', second='*/59', args=['FDUSD/USDT', 6,0.0001])
 
 
-def buy_loop():
+def compute_buy_amount():
+    _, _, _, ahr999 = get_ahr999()
+    amount = (1.2 - ahr999) * 300
+    print(f"search {datetime.now()} ahr999={ahr999:.4f}, buy amount={amount:.4f}", flush=True)
+    return amount, ahr999
+
+
+def buy_btc():
+    try:
+        # 调用另一个文件的 get_ahr999
+        amount, ahr999 = compute_buy_amount()
+        buy("BTC/FDUSD", amount, 30)
+
+    except Exception as e:
+        print(f"buy_fail {datetime.now()} 出现异常: {e}", flush=True)
+
+
+def main():
+    job_defaults = {
+        'max_instances': 30,
+        'misfire_grace_time': None
+    }
+    scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
+    scheduler.add_job(buy_btc, 'cron', minute='*')
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
+
+
+if __name__ == '__main__':
+    main()
+
     while True:
-        try:
-            buy("BTC/FDUSD", 11, 20)
-        except Exception as e:
-            print(f"{datetime.now()} buy 出现异常: {e}", flush=True)
-        # 等待 30 分钟
-        time.sleep(30 * 60)
-
-def print_loop():
-    while True:
-        print("tick", datetime.now(),flush=True)
-        time.sleep(3)
-
-if __name__ == "__main__":
-    # 创建线程
-    t1 = threading.Thread(target=buy_loop, daemon=True)   # buy 循环线程
-    # t2 = threading.Thread(target=print_loop, daemon=True) # 打印循环线程
-
-    # 启动线程
-    t1.start()
-
-    # 主线程保持运行
-    t1.join()
+        time.sleep(1)
