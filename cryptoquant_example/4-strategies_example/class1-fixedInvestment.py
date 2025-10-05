@@ -15,6 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import time
 import ccxt
+import socket
 
 '''
     year (int|str) – 4-digit year
@@ -80,6 +81,10 @@ def main():
         'max_instances': 30,
         'misfire_grace_time': None
                     }  # 最大任务数量
+    hostname = socket.gethostname()
+    # 获取本机ip
+    ip = socket.gethostbyname(hostname)
+    print(ip)
     buy('BTC/FDUSD', 11, 5)
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
     # scheduler.add_job(tick, 'cron', minute="*", second='10')
