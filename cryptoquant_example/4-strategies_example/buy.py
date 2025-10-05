@@ -104,7 +104,7 @@ def main():
         'misfire_grace_time': None
     }
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
-    scheduler.add_job(buy_btc, 'cron', minute='*')
+    scheduler.add_job(buy_btc, 'cron', hour='*')
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
