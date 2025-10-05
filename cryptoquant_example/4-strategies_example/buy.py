@@ -83,7 +83,7 @@ def buy(symbol, amount, cut):
 
 def compute_buy_amount():
     _, _, _, ahr999 = get_ahr999()
-    amount = (1.2 - ahr999) * 300
+    amount = (1.2 - ahr999) * 250
     print(f"search {datetime.now()} ahr999={ahr999:.4f}, buy amount={amount:.4f}", flush=True)
     return amount, ahr999
 
