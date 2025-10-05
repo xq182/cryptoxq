@@ -114,12 +114,10 @@ def print_loop():
 if __name__ == "__main__":
     # 创建线程
     t1 = threading.Thread(target=buy_loop, daemon=True)   # buy 循环线程
-    t2 = threading.Thread(target=print_loop, daemon=True) # 打印循环线程
+    # t2 = threading.Thread(target=print_loop, daemon=True) # 打印循环线程
 
     # 启动线程
     t1.start()
-    t2.start()
 
     # 主线程保持运行
     t1.join()
-    t2.join()
