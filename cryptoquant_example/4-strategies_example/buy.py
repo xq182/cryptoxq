@@ -77,6 +77,7 @@ def buy(symbol, amount, cut):
 #  nohup python  buy.py >xq.log&
 # ps aux | grep buy.py
 # kill - 9 73465
+# /home/ec2-user/cryptoxq/cryptoquant_example/4-strategies_example
 
 # scheduler.add_job(buy, 'cron', second='*/59', args=['FDUSD/USDT', 6,0.0001])
 
