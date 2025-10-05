@@ -39,17 +39,19 @@ import ccxt
     last    day    Fire on the last day within the month
     x,y,z    any    Fire on any matching expression; can combine any number of any of the above expressions
 '''
+
+        #
+        # 'proxies': {
+        #     'http': '127.0.0.1:7897',
+        #     'https': '127.0.0.1:7897'
+        # }
 exchange = ccxt.binance(
 
     {
         'apiKey': 'g0G9maOBYMbcgqc8vRAohK5q7j1dSRCu5wIkl5HoUSoWI7hopOeRr7p9N8Jczgfi',
         'secret': 'tfLZcHoKlwycpmbL8TLk7sXxdwV9Ho2pUcWB1FDLalsiVbeo9Qe2oYJmkTWPUs23',
         'timeout': 30000,
-        'enableRateLimit': True,
-        'proxies': {
-            'http': '127.0.0.1:7897',
-            'https': '127.0.0.1:7897'
-        }
+        'enableRateLimit': True
     }
 )
 
@@ -78,10 +80,10 @@ def main():
         'max_instances': 30,
         'misfire_grace_time': None
                     }  # 最大任务数量
-
+    buy('BTC/FDUSD', 11, 5)
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
-    scheduler.add_job(tick, 'cron', minute="*", second='3')
-    scheduler.add_job(buy, 'cron', minute='55', args=['BTC/FDUSD', 11, 5])
+    # scheduler.add_job(tick, 'cron', minute="*", second='10')
+    # scheduler.add_job(buy, 'cron', minute='10', args=['BTC/FDUSD', 11, 5])
 
     # scheduler.add_job(buy, 'cron', second='*/3', args=['FDUSD/USDT', 6,0.0001])
 
