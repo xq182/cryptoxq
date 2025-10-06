@@ -96,7 +96,7 @@ def buy_btc():
         buy("BTC/FDUSD", amount, 30)
 
     except Exception as e:
-        print(f"buy_fail {datetime.now()} 出现异常: {e}", flush=True)
+        print(f"buy_fail BTC/FDUSD {datetime.now()} err: {e}", flush=True)
 
 
 def main():
@@ -105,7 +105,7 @@ def main():
         'misfire_grace_time': None
     }
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
-    scheduler.add_job(buy_btc, 'cron', hour='*')
+    scheduler.add_job(buy_btc, 'interval', hours=3)
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
