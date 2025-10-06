@@ -106,6 +106,7 @@ def main():
     }
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai', job_defaults=job_defaults)
     scheduler.add_job(buy_btc, 'interval', hours=3)
+    scheduler.add_job(buy, 'interval', hours=4, args=['TRX/FDUSD', 6,0.0002])
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
